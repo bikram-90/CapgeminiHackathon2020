@@ -1,0 +1,36 @@
+/* --------------- Hero ---------------- */
+.hero {
+  min-height: calc(100vh - 60px);
+  background: url("./images/hero-bcg.jpeg") center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.banner {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.8);
+  display: inline-block;
+  padding: 2rem;
+}
+.banner-title {
+  font-size: 3.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  margin-bottom: 3rem;
+}
+.banner-btn {
+  padding: 1rem 3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 1rem;
+  background: #f09d51;
+  color: #222;
+  border: 1px solid #f09d51;
+  transition: all 0.3s linear;
+  cursor: pointer;
+}
+.banner-btn:hover {
+  background: transparent;
+  color: #f09d51;
+}
+/* --------------- End of Hero ---------------- */
