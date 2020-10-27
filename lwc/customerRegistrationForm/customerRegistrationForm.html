@@ -1,0 +1,76 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <img src={heroImagePath} alt="hero image">
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                <article class="slds-card slds-p-around_medium card-background">
+                    <div class="slds-card__body slds-card__body_inner">
+                        <lightning-record-edit-form object-api-name="Contact" record-id={contactRecordId}
+                            onload={handleLoad} onsubmit={handleSubmit} onsuccess={handleSuccess} onerror={handleError}>
+
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                    <lightning-input-field data-id="Firstname__c" field-name="Firstname__c"
+                                        value={contactFieldsJSON.Firstname__c} required="" onchange={handleFieldChange}>
+                                    </lightning-input-field>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
+                                    <lightning-input-field data-id="Lastname__c" field-name="Lastname__c"
+                                        value={contactFieldsJSON.Lastname__c} required="" onchange={handleFieldChange}>
+                                    </lightning-input-field>
+                                </div>
+                            </div>
+
+                            <lightning-input-field data-id="Email" field-name="Email" value={contactFieldsJSON.Email}
+                                required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="CNx_Country__c" field-name="CNx_Country__c"
+                                value={contactFieldsJSON.CNx_Country__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Ship_To_Line_1__c" field-name="Ship_To_Line_1__c"
+                                value={contactFieldsJSON.Ship_To_Line_1__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Ship_To_Line_2__c" field-name="Ship_To_Line_2__c"
+                                value={contactFieldsJSON.Ship_To_Line_2__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Ship_To_City__c" field-name="Ship_To_City__c"
+                                value={contactFieldsJSON.Ship_To_City__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Ship_To_State__c" field-name="Ship_To_State__c"
+                                value={contactFieldsJSON.Ship_To_State__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Username__c" field-name="Username__c"
+                                value={contactFieldsJSON.Username__c} required="" onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <lightning-input-field data-id="Password__c" field-name="Password__c"
+                                value={contactFieldsJSON.Password__c} type="password" required=""
+                                onchange={handleFieldChange}>
+                            </lightning-input-field>
+
+                            <div class="slds-align_absolute-center">
+                                <lightning-button data-id="registerButton" variant="brand" type="submit"
+                                    onclick={handleRegister} label="Register">
+                                </lightning-button>
+                            </div>
+
+                        </lightning-record-edit-form>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </article>
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+
+</template>
