@@ -23,14 +23,14 @@
   text-transform: uppercase;
   letter-spacing: 0.1rem;
   font-size: 1rem;
-  background: #f09d51;
-  color: #222;
-  border: 1px solid #f09d51;
+  background: #000000;
+  color: rgb(255, 255, 255);
+  border: 1px solid #000000;
   transition: all 0.3s linear;
   cursor: pointer;
 }
 .banner-btn:hover {
   background: transparent;
-  color: #f09d51;
+  color: #000000;
 }
 /* --------------- End of Hero ---------------- */

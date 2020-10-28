@@ -1,17 +1,28 @@
 <template>
     <div class="navbar">
+        
         <div class="navbar-center">
             <span class="nav-icon">
                 <i class="fas fa-bars"></i>
             </span>
             <!-- <img src="./images/logo.svg" alt="store logo"> -->
-            <img src={navBarLogoPath} alt="store logo">
+            <!-- <img src={navBarLogoPath} alt="store logo"> -->
+
+            <div data-key="registerBtn" class="registerBtn">
+                <a href={registerUrl}>Register</a>
+            </div>
+
+            <!-- <div data-key="loginBtn" class="loginBtn">
+                <a href="/account/login?ret=/">Login</a>
+            </div> -->
+
             <div data-key="cartbtn" class="cart-btn">
                 <span class="nav-icon">
                     <i class="fas fa-cart-plus"></i>
                 </span>
                 <div class="cart-items">0</div>
             </div>
+
         </div>
     </div>
 </template>
