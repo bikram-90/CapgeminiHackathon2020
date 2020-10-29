@@ -4,6 +4,7 @@ import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import FontAwesome from '@salesforce/resourceUrl/FontAwesome';
 import GoogleFont from '@salesforce/resourceUrl/GoogleFont';
 import getCNxProducts from '@salesforce/apex/ProductsController.getCNxProducts';
+import pubsub from 'c/pubSubUtility';
 
 //Variables
 let cartBtn;
@@ -35,20 +36,21 @@ export default class Products extends LightningElement {
         console.log('INSIDE Products connectedCallback');
         loadScript(this, FontAwesome + '/fontawesome.js');
         loadStyle(this, GoogleFont + '/googleFont.css');
+        this.callsubscriber();
         chessImagePath = CNxFiles + '/CNxFiles/Images/chessKing.jpg';
+
     }
 
     renderedCallback() {
         console.log('INSIDE Products renderedCallback');
 
-        cartBtn = this.template.querySelector(".cart-btn");
+        // cartBtn = this.template.querySelector(".cart-btn");
         closeCartBtn = this.template.querySelector(".close-cart");
         clearCartBtn = this.template.querySelector(".clear-cart");
         buyNowBtn = this.template.querySelector(".buy-now");
         cartDOM = this.template.querySelector(".cart");
         cartOverlay = this.template.querySelector(".cart-overlay");
-        cartItems = this.template.querySelector(".cart-items");        
-        console.log('cartItems : ' + cartItems.classList);
+        // cartItems = this.template.querySelector(".cart-items");
         cartTotal = this.template.querySelector(".cart-total");
         cartContent = this.template.querySelector(".cart-content");
         productsDOM = this.template.querySelector(".products-center");
@@ -79,6 +81,19 @@ export default class Products extends LightningElement {
         }
 
     }
+
+    callsubscriber(){
+        pubsub.subscribe('showCartButtonClicked', this.subscriberCallback);
+    }
+
+    subscriberCallback=(event)=>{
+        console.log('showCart subscriberCallback : ' + event);
+        if(event === 'showCart'){
+            const ui = new UI();
+            ui.showCart();
+        }
+    }
+
 }
 
 //getting the Products
@@ -223,8 +238,12 @@ export class UI {
                 cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
             }
 
-            if (cartItems) {
-                cartItems.innerText = itemsTotal;
+            // if (cartItems) {
+            //     cartItems.innerText = itemsTotal;//handled by pubsub utility as navbar is a separate cmp
+            // }
+
+            if(itemsTotal >= 0){
+                this.eventPublisher(itemsTotal);//call publish function of pubsub utility
             }
 
             console.log('setCartValues : ' + cartTotal, cartItems);
@@ -374,6 +393,10 @@ export class UI {
 
     buyNow(){
         console.log('INSIDE buyNow');
+    }
+
+    eventPublisher(data){
+        pubsub.publish("cartItemsUpdated", data);
     }
 
 }

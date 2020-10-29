@@ -3,7 +3,10 @@ import CNxFiles from '@salesforce/resourceUrl/CNxFiles';
 import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import FontAwesome from '@salesforce/resourceUrl/FontAwesome';
 import GoogleFont from '@salesforce/resourceUrl/GoogleFont';
-//import propertyName from '@salesforce/community/property';
+import pubsub from 'c/pubSubUtility';
+
+let cartItems;
+let cartBtn;
 
 export default class Navbar extends LightningElement {
 
@@ -21,9 +24,29 @@ export default class Navbar extends LightningElement {
         console.log('INSIDE Navbar connectedCallback');
         loadScript(this, FontAwesome + '/fontawesome.js');
         loadStyle(this, GoogleFont + '/googleFont.css');
+        this.callsubscriber();
     }
     renderedCallback() {
         console.log('INSIDE Navbar renderedCallback');
-        console.log("navBarLogoPath : " + this.navBarLogoPath);
+        cartBtn = this.template.querySelector(".cart-btn");
+        cartItems = this.template.querySelector(".cart-items");
+    }
+
+    callsubscriber(){
+        pubsub.subscribe('cartItemsUpdated', this.subscriberCallback);
+    }
+
+    subscriberCallback=(event)=>{
+        cartItems.innerText = event;
+    }
+
+    hanldeShowCart(event){
+        console.log('eventPublisher data : ');
+        this.eventPublisher('showCart')
+    }
+
+    eventPublisher(data){
+        console.log('eventPublisher data : ' + data);
+        pubsub.publish("showCartButtonClicked", data);
     }
 }
