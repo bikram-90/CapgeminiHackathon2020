@@ -1,13 +1,15 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track, wire } from 'lwc';
 import CNxFiles from '@salesforce/resourceUrl/CNxFiles';
 import { loadStyle, loadScript } from 'lightning/platformResourceLoader';
 import FontAwesome from '@salesforce/resourceUrl/FontAwesome';
 import GoogleFont from '@salesforce/resourceUrl/GoogleFont';
+import getCNxProducts from '@salesforce/apex/ProductsController.getCNxProducts';
 
 //Variables
 let cartBtn;
 let closeCartBtn;
 let clearCartBtn;
+let buyNowBtn;
 let cartDOM;
 let cartOverlay;
 let cartItems;
@@ -18,13 +20,22 @@ let productsDOM;
 let cart = [];
 //buttons
 let buttonsDOM = [];
+let chessImagePath;
 
 export default class Products extends LightningElement {
+
+    error;
+    @track cnxPrdJSON;
+
+    // get chessImagePath() {
+    //     return CNxFiles + '/CNxFiles/Images/chessKing.jpg';
+    // }
 
     connectedCallback() {
         console.log('INSIDE Products connectedCallback');
         loadScript(this, FontAwesome + '/fontawesome.js');
         loadStyle(this, GoogleFont + '/googleFont.css');
+        chessImagePath = CNxFiles + '/CNxFiles/Images/chessKing.jpg';
     }
 
     renderedCallback() {
@@ -33,9 +44,11 @@ export default class Products extends LightningElement {
         cartBtn = this.template.querySelector(".cart-btn");
         closeCartBtn = this.template.querySelector(".close-cart");
         clearCartBtn = this.template.querySelector(".clear-cart");
+        buyNowBtn = this.template.querySelector(".buy-now");
         cartDOM = this.template.querySelector(".cart");
         cartOverlay = this.template.querySelector(".cart-overlay");
-        cartItems = this.template.querySelector(".cart-items");
+        cartItems = this.template.querySelector(".cart-items");        
+        console.log('cartItems : ' + cartItems.classList);
         cartTotal = this.template.querySelector(".cart-total");
         cartContent = this.template.querySelector(".cart-content");
         productsDOM = this.template.querySelector(".products-center");
@@ -49,6 +62,7 @@ export default class Products extends LightningElement {
 
             //Get all products
             prds.getProducts().then(products => {
+                console.log('After getProducts() Products : ' + JSON.stringify(products));
                 ui.displayProducts(products);
                 //this.productsArray = products;
                 Storage.saveProducts(products);
@@ -72,6 +86,30 @@ export class CNxProducts {
 
     async getProducts() {
         try {
+            let result = await getCNxProducts();
+            console.log('getProducts result : ' + JSON.stringify(result));
+            let prds = JSON.parse(JSON.stringify(result));
+            /*prds = prds.map(item => {
+                const { title, price } = item.fields;
+                const { id } = item.sys;
+                //const image = item.fields.image.fields.file.url;
+                const image = ComfyHouseSetupFiles + '/setup-files-js-comfy-house-master/images/product-' + item.sys.id + '.jpeg';
+                return { title, price, id, image };
+            });*/
+
+            for (let i = 0; i < prds.length; i++) {
+                prds[i].prdImage = chessImagePath;
+                prds[i].id = prds[i].prdPriceBookEntryId;
+            }
+            console.log('getProducts prds : ' + JSON.stringify(prds));
+            return prds;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*async getProducts() {
+        try {
             let result = await fetch(productsJSONPath);
             let data = await result.json();
             let prds = data.items;
@@ -86,7 +124,7 @@ export class CNxProducts {
         } catch (error) {
             console.log(error);
         }
-    }
+    }*/
 
 }
 
@@ -95,22 +133,23 @@ export class UI {
 
     displayProducts(products) {
         try {
-            console.log(products);
+            console.log('INSIDE displayProducts : ' + JSON.stringify(products));
             let result = '';
             products.forEach(product => {
                 result += `
                     <!-- Single Product -->
                     <article class="product">
                         <div class="img-container">
-                            <img src=${product.image} alt="product"
+                        <img src=${chessImagePath} alt="product"
                             class="product-img">
-                            <button class="bag-btn" data-id=${product.id}>
+                            <!-- ${product.prdImage} -->
+                            <button class="bag-btn" data-id=${product.prdPriceBookEntryId}>
                                 <i class="fas fa-shopping-cart"></i>
                                 add to bag
                             </button>
                         </div>
-                        <h3>${product.title}</h3>
-                        <h4>$${product.price}</h4>
+                        <h3>${product.prdTitle}</h3>
+                        <h4>$${product.prdPrice}</h4>
                     </article>
                 <!-- Single Product -->
             `;
@@ -131,7 +170,9 @@ export class UI {
 
             buttons.forEach(button => {
                 let id = button.dataset.id;
+                console.log('getBagButtons button id : ' + id);
                 let inCart = cart.find(item => item.id === id);
+                console.log('getBagButtons inCart : ' + JSON.stringify(inCart));
 
                 if (inCart) {
                     button.innerText = "In Cart";
@@ -140,22 +181,24 @@ export class UI {
                 }
                 button.addEventListener('click', (event) => {
 
-                    console.log(event);
+                    console.log('getBagButtons event : ' + event);
                     event.target.innerText = "In Cart";
                     event.target.disabled = true;
 
                     //get product from products
                     let cartItem = { ...Storage.getProduct(id), amount: 1 };
-                    console.log(cartItem);
+                    console.log('getBagButtons cartItem : ' + JSON.stringify(cartItem));
 
                     //add prd to the cart
                     cart = [...cart, cartItem];
-                    console.log(cart);
+                    console.log('getBagButtons cart : ' + JSON.stringify(cart));
 
                     //save cart in local storage
                     Storage.saveCart(cart);
                     //set cart values
-                    this.setCartValues(cart);
+                    if (cart.length > 0) {
+                        this.setCartValues(cart);
+                    }
                     //display cart item
                     this.addCartItem(cartItem);
                     //show the cart
@@ -173,12 +216,18 @@ export class UI {
             let tempTotal = 0;
             let itemsTotal = 0;
             cart.map(item => {
-                tempTotal += item.price * item.amount;
+                tempTotal += item.prdPrice * item.amount;
                 itemsTotal += item.amount;
-            })
-            cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
-            cartItems.innerText = itemsTotal;
-            console.log(cartTotal, cartItems);
+            });
+            if (cartTotal) {
+                cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
+            }
+
+            if (cartItems) {
+                cartItems.innerText = itemsTotal;
+            }
+
+            console.log('setCartValues : ' + cartTotal, cartItems);
         } catch (error) {
             console.log(error);
         }
@@ -186,7 +235,7 @@ export class UI {
     }
 
     addCartItem(item) {
-
+        console.log('addCartItem item : ' + JSON.stringify(item));
         try {
             //const div = this.template.createElement('div');
             //div.classList.add('cart-item');
@@ -194,16 +243,16 @@ export class UI {
             let result = '';
             result = `
             <div class="cart-item">
-                <img src=${item.image} alt="product">
+                <img src=${item.prdImage} alt="product">
                 <div>
-                    <h4>${item.title}</h4>
-                    <h5>$${item.price}</h5>
-                    <span class="remove-item" data-id=${item.id}>remove</span>
+                    <h4>${item.prdTitle}</h4>
+                    <h5>$${item.prdPrice}</h5>
+                    <span class="remove-item" data-id=${item.prdPriceBookEntryId}>remove</span>
                 </div>
                 <div>
-                    <i class="fas fa-chevron-up" data-id=${item.id}></i>
+                    <i class="fas fa-chevron-up" data-id=${item.prdPriceBookEntryId}></i>
                         <p class="item-amount">${item.amount}</p>
-                    <i class="fas fa-chevron-down" data-id=${item.id}></i>
+                    <i class="fas fa-chevron-down" data-id=${item.prdPriceBookEntryId}></i>
                 </div>   
                 </div>
         `;
@@ -216,19 +265,24 @@ export class UI {
         }
     }
 
-    showCart() {
+    showCart() {        
         cartOverlay.classList.add('transparentBcg');
         cartDOM.classList.add('showCart');
+        closeCartBtn.addEventListener('click', this.hideCart);
     }
 
     setupApp() {
         try {
             console.log('INSIDE UI SETUPAPP');
             cart = Storage.getCart();
-            this.setCartValues(cart);
-            this.populateCart(cart);
+            console.log('INSIDE UI SETUPAPP cart.length : ' + cart.length);
+            if (cart.length > 0) {
+                this.setCartValues(cart);
+                this.populateCart(cart);
+            }
             cartBtn.addEventListener('click', this.showCart);
-            closeCartBtn.addEventListener('click', this.hideCart);
+            //closeCartBtn.addEventListener('click', this.hideCart);//moved to showCart()
+
         } catch (error) {
             console.log(error);
         }
@@ -240,6 +294,7 @@ export class UI {
     }
 
     hideCart() {
+        console.log('hideCart : ' + cartOverlay.classList + ' : ' + cartDOM.classList);
         cartOverlay.classList.remove('transparentBcg');
         cartDOM.classList.remove('showCart');
     }
@@ -249,6 +304,10 @@ export class UI {
             //Clear Cart Button
             clearCartBtn.addEventListener("click", () => {
                 this.clearCart();
+            });
+            //Buy Now Button
+            buyNowBtn.addEventListener("click", () => {
+                this.buyNow();
             });
             //Cart Functionality
             cartContent.addEventListener("click", event => {
@@ -311,6 +370,10 @@ export class UI {
 
     getSingleButton(id) {
         return buttonsDOM.find(button => button.dataset.id === id);
+    }
+
+    buyNow(){
+        console.log('INSIDE buyNow');
     }
 
 }
