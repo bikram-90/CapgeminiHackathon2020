@@ -8,13 +8,18 @@
     <header class="hero" style={heroStyle}>
         <div class="banner">
             <h1 class="banner-title">Are you a serious Gamer ?</h1>
-            <button class="banner-btn">Shop Now</button>
+            <!-- <button class="banner-btn">Shop Now</button> -->
+            <div data-key="registerBtn" class="registerBtn">
+                <a href={shopNowUrl} class="banner-btn">Shop Now</a>
+            </div>           
         </div>
     </header>
     <!-- Hero -->
 
     <!-- Products -->
-    <c-products></c-products>
+    <!-- <div class="slds-hide"> -->
+        <c-products></c-products>
+    <!-- </div>     -->
     <!-- Products -->
 
 </template>

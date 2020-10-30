@@ -19,6 +19,12 @@ export default class CnxApp extends LightningElement {
             + 'justify-content: center;';
     }
 
+    get shopNowUrl() {
+        var urlString = window.location.href;
+        var baseURL = urlString.substring(0, urlString.indexOf("/s"));
+        return baseURL + '/s/products';
+    }
+
     connectedCallback(){
         console.log('INSIDE CnxApp connectedCallback');
         loadScript(this, FontAwesome + '/fontawesome.js');

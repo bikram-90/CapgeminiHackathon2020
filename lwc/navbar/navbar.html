@@ -1,28 +1,32 @@
 <template>
     <div class="navbar">
-        
         <div class="navbar-center">
-            <span class="nav-icon">
-                <i class="fas fa-bars"></i>
-            </span>
-            <!-- <img src="./images/logo.svg" alt="store logo"> -->
-            <!-- <img src={navBarLogoPath} alt="store logo"> -->
-
-            <div data-key="registerBtn" class="registerBtn">
-                <a href={registerUrl}>Register</a>
-            </div>
-
-            <!-- <div data-key="loginBtn" class="loginBtn">
-                <a href="/account/login?ret=/">Login</a>
-            </div> -->
-
-            <div data-key="cartbtn" class="cart-btn" onclick={hanldeShowCart}>
-                <span class="nav-icon">
-                    <i class="fas fa-cart-plus"></i>
-                </span>
-                <div class="cart-items">0</div>
-            </div>
-
+            <ul class="slds-list_horizontal slds-clearfix" style="display: block;">
+                <li class="slds-p-around_xx-small slds-float_left">
+                    <!-- <span class="nav-icon">
+                        <i class="fas fa-bars"></i>
+                    </span> -->
+                    <img src={navBarLogoPath} alt="store logo">
+                </li>
+                <li class="slds-p-around_xx-small slds-float_right">
+                    <div data-key="cartbtn" class="cart-btn" onclick={hanldeShowCart}>
+                        <span class="nav-icon">
+                            <i class="fas fa-cart-plus"></i>
+                        </span>
+                        <div class="cart-items">0</div>
+                    </div>
+                </li>
+                <li class="slds-p-around_xx-small slds-float_right">
+                    <div data-key="registerBtn">
+                        <a href={registerUrl} class="buttonCss">Register</a>
+                    </div>
+                </li>
+                <li class="slds-p-around_xx-small slds-float_right">
+                    <div data-key="loginBtn">
+                        <a href={loginUrl} class="buttonCss">Login</a>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </template>
