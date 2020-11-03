@@ -5,8 +5,14 @@
                 <img src={heroImagePath} alt="hero image">
             </div>
             <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12">
-                <article class="slds-card slds-p-around_medium card-background">
+                <article class="slds-card slds-p-around_medium card-background slds-p-top_large slds-m-top_large">
                     <div class="slds-card__body slds-card__body_inner">
+                        <div class="slds-align_absolute-center slds-p-around_large slds-m-around_large">
+                            Sign Up!!!
+                        </div>
+                        <template if:true={errorMessage}>
+                            {errorMessage}
+                        </template>
                         <lightning-record-edit-form object-api-name="Contact" record-id={contactRecordId}
                             onload={handleLoad} onsubmit={handleSubmit} onsuccess={handleSuccess} onerror={handleError}>
 
@@ -51,10 +57,18 @@
                                 value={contactFieldsJSON.Username__c} required="" onchange={handleFieldChange}>
                             </lightning-input-field>
 
-                            <lightning-input-field data-id="Password__c" field-name="Password__c"
+                            <!-- <lightning-input-field data-id="Password__c" field-name="Password__c"
                                 value={contactFieldsJSON.Password__c} type="password" required=""
                                 onchange={handleFieldChange}>
-                            </lightning-input-field>
+                            </lightning-input-field> -->
+
+                            <!-- Define fields which we require in our logic but do not want to show to user, using slds-hide -->
+                            <div class="slds-hide">
+                                <lightning-input-field data-id="AccountId" field-name="AccountId">
+                                </lightning-input-field>
+                                <lightning-input-field data-id="isCNxUser__c" field-name="isCNxUser__c">
+                                </lightning-input-field>
+                            </div>
 
                             <div class="slds-align_absolute-center">
                                 <lightning-button data-id="registerButton" variant="brand" type="submit"

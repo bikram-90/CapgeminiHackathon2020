@@ -14,7 +14,8 @@ export default class Navbar extends LightningElement {
     get registerUrl() {
         var urlString = window.location.href;
         var baseURL = urlString.substring(0, urlString.indexOf("/s"));
-        return baseURL + '/s/customer-registration';
+        // return baseURL + '/s/login/SelfRegister';//Standard Form
+        return baseURL + '/s/customer-registration';//Custom Form
     }
 
     get loginUrl() {
